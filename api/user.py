@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends, Request
-from datetime import datetime, timedelta
+from fastapi import APIRouter,Request
 from pydantic import BaseModel
 import hashlib
-from tortoise.exceptions import DoesNotExist, IntegrityError
-from typing import Optional, Union
+from tortoise.exceptions import IntegrityError
+from typing import Optional
 
 import sys
 from pathlib import Path
@@ -23,10 +22,6 @@ class RegisterRequest(BaseModel):
 
     class Config:
         from_attributes = True
-    
-class TokenData(BaseModel):
-    user_id: str
-    exp: Optional[str] = None
 
 
 
@@ -34,9 +29,9 @@ class TokenData(BaseModel):
 # 定义一个异步函数login，参数为LoginRequest类型的request
 async def login(request: LoginRequest):
     # 根据request中的loginName获取用户信息
-    user = await User.get(login_name=request.loginName)
-    # 如果用户密码不匹配，返回错误信息
-    if user.password_md5 != request.passwordMd5.lower():
+    user = await User.get_or_none(login_name=request.loginName)
+    # 如果用户不存在或密码不匹配，返回错误信息
+    if not user or user.password_md5 != request.passwordMd5.lower():
          return {
                 "resultCode": 400, 
                 "message": "用户名或密码错误",

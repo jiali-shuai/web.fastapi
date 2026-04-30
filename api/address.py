@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Request, HTTPException
-from tortoise.exceptions import DoesNotExist, IntegrityError
+from fastapi import APIRouter, Request
+from tortoise.exceptions import DoesNotExist
 from typing import Optional
 from pydantic import BaseModel
 import sys

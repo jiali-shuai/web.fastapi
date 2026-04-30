@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Request
-from tortoise.exceptions import IntegrityError
-from typing import List,Optional
+from tortoise.exceptions import DoesNotExist
+from typing import Optional
 from pydantic import BaseModel
+
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 from core.jwt import verify_and_get_token_data
-from muban.muban import Cart, Goods
+from muban.muban import Cart
 
 router = APIRouter()
 

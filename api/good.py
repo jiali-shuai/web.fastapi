@@ -1,6 +1,4 @@
-from fastapi import FastAPI, HTTPException
-from fastapi import APIRouter, HTTPException, Query
-from pydantic import BaseModel
+from fastapi import APIRouter,Query
 from typing import Optional
 
 import sys
@@ -10,22 +8,6 @@ from muban.muban import Goods
 
 
 router = APIRouter() 
-
-class ProductListResponse(BaseModel):
-    # 定义响应模型字段
-    id: int
-    name: str
-    price: float
-class GoodsDetail(BaseModel):
-    id: int  # 修改字段名
-    goods_name: str  # 修改字段名
-    selling_price: float  # 修改字段名
-    detail_content: Optional[str] = None
-    goods_detail_content: Optional[str] = None
-
-    class Config:
-        from_attributes = True
-
 
 
 @router.get("/goods/detail/{goods_id}")

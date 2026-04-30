@@ -1,14 +1,13 @@
-from fastapi import APIRouter, Depends, Request,Query
+from fastapi import APIRouter,Request,Query
 from datetime import datetime
 from pydantic import BaseModel
 from typing import List, Optional
-from tortoise.exceptions import DoesNotExist, IntegrityError
 
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 from core.jwt import verify_and_get_token_data
-from muban.muban import User, Order, OrderItem,Cart,Address
+from muban.muban import Order, OrderItem,Cart
 
 router = APIRouter()
 
@@ -37,13 +36,6 @@ class OrderCreate(BaseModel):
     totalPrice: Optional[float] = None
     items: Optional[List[OrderItemCreate]] = None
 
-class OrderResponse(BaseModel):
-    orderNo: str
-    totalPrice: float
-    orderStatus: int
-    orderStatusString: str
-    createTime: datetime
-    newBeeMallOrderItemVOS: List[OrderItemCreate]
 
 def get_order_status_string(status: int) -> str:
     status_map = {
@@ -106,8 +98,7 @@ async def create_order(
             create_time=datetime.now()
         )
         
-        # 创建订单项
-        order_items = [
+        for item in order_data.items:
             await OrderItem.create(
                 order_id=order.order_id,
                 goods_id=item.goodsId,
@@ -116,8 +107,6 @@ async def create_order(
                 goods_cover_img=item.goodsCoverImg,
                 selling_price=item.sellingPrice
             )
-            for item in order_data.items
-        ]
         
         # 删除购物车中的商品
         await Cart.filter(
